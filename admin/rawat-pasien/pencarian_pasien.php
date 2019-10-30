@@ -28,13 +28,13 @@ $pageQry = mysql_query($pageSql, $koneksidb) or die ("error paging: ".mysql_erro
 $jml	 = mysql_num_rows($pageQry);
 $max	 = ceil($jml/$row);
 ?>
-<h2>Cari Pasien</h2>
-<form action="<?php $_SERVER['PHP_SELF']; ?>" method="post" name="form1" target="_self">
-  <strong>Cari Nama Pasien :</strong>
-  <input name="txtCari" type="text" value="<?php echo $dataCari; ?>" size="40" maxlength="100" />
-  <input name="btnCari" type="submit" value="Cari" />
+<form action="<?php $_SERVER['PHP_SELF']; ?>" method="post" name="form1" target="_self" id="form1" class="form-inline">
+   <div class="form-group">
+  <input name="txtCari" type="text" value="<?php echo $dataCari; ?>" size="40" maxlength="100" class="form-control" placeholder="Cari berdasarkan nama"/>
+  <input name="btnCari" type="submit" value="Cari" class="btn btn-default" />
+</div>
 </form>
-<table  class="table-list" width="700" border="0" cellspacing="1" cellpadding="3">
+<table  class="table table-striped">
   <tr>
     <th width="20" bgcolor="#CCCCCC">No</th>
     <th width="80" bgcolor="#CCCCCC"><strong>Nomor RM </strong></th>
@@ -58,7 +58,7 @@ while ($myData = mysql_fetch_array($myQry)) {
     <td><?php echo $myData['jns_kelamin']; ?></td>
     <td><?php echo $myData['gol_darah']; ?></td>
     <td><?php echo $myData['alamat']; ?></td>
-    <td><a href="?page=Rawat-Baru&NomorRM=<?php echo $myData['nomor_rm']; ?>" target="_self" alt="Rawat">Rawat</a></td>
+    <td><a href="?page=Rawat-Baru&NomorRM=<?php echo $myData['nomor_rm']; ?>" target="_self" alt="Rawat" class="btn btn-success">Rawat</a></td>
   </tr>
 <?php } ?>  
   <tr>

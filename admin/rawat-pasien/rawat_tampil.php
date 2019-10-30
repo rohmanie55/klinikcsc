@@ -8,19 +8,8 @@ $pageSql = "SELECT * FROM rawat";
 $pageQry = mysql_query($pageSql, $koneksidb) or die ("error paging: ".mysql_error());
 $jml	 = mysql_num_rows($pageQry);
 $max	 = ceil($jml/$row);
-?><table width="800" border="0" cellpadding="2" cellspacing="1" class="table-border">
-  <tr>
-    <td width="5" align="right">&nbsp;</td>
-    <td colspan="2" align="right"><h1><b>DATA RAWAT PASIEN </b></h1></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td colspan="2">&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td colspan="2">
-	<table class="table-list" width="100%" border="0" cellspacing="1" cellpadding="2">
+?>
+	<table class="table table-striped" >
       <tr>
         <th width="29" align="center"><strong>No</strong></th>
         <th width="102"><strong>No. Rawat </strong></th>
@@ -48,21 +37,18 @@ $max	 = ceil($jml/$row);
         <td><?php echo $myData['nomor_rm']; ?></td>
         <td><?php echo $myData['nm_pasien']; ?></td>
         <td><?php echo $myData['hasil_diagnosa']; ?></td>
-        <td width="45" align="center"><a href="rawat_nota.php?nomorRawat=<?php echo $Kode; ?>" target="_blank">Nota</a></td>
-        <td width="45" align="center"><a href="?page=Rawat-Hapus&Kode=<?php echo $Kode; ?>" target="_self" alt="Delete Data" onclick="return confirm('ANDA YAKIN AKAN MENGHAPUS DATA RAWAT INI ... ?')">Delete</a></td>
+        <td width="45" align="center"><a href="rawat_nota.php?nomorRawat=<?php echo $Kode; ?>" target="_blank" class="btn btn-success"><i class="fa fa-credit-card"></i></a></td>
+        <td width="45" align="center"><a href="?page=Rawat-Hapus&Kode=<?php echo $Kode; ?>" target="_self" alt="Delete Data" onclick="return confirm('ANDA YAKIN AKAN MENGHAPUS DATA RAWAT INI ... ?')" class="btn btn-danger"><i class="fa fa-trash"></i></a></td>
       </tr>
       <?php } ?>
-    </table></td>
+        <tr>
+    <td colspan="3"><strong>Jumlah Data :</strong> </td>
+    <td colspan="4" align="right"><strong>Halaman ke : </strong>
+  <?php
+ for ($h = 1; $h <= $max; $h++) {
+    $list[$h] = $row * $h - $row;
+    echo " <a href='?page=Rawat-Tampil&hal=$list[$h]'>$h</a> ";
+  }
+  ?></td>
   </tr>
-  <tr class="selKecil">
-    <td>&nbsp;</td>
-    <td width="299"><b>Jumlah Data :</b></td>
-    <td width="480" align="right"><b>Halaman ke :</b>
-      <?php
-	for ($h = 1; $h <= $max; $h++) {
-		$list[$h] = $row * $h - $row;
-		echo " <a href='?page=Rawat-Tampil&hal=$list[$h]'>$h</a> ";
-	}
-	?></td>
-  </tr>
-</table>
+    </table>

@@ -21,7 +21,7 @@ else {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Cetak Nota Rawat Pasien - Apotek & Klinik Fitria</title>
+<title>Cetak Nota Rawat Pasien</title>
 <link href="../styles/styles_cetak.css" rel="stylesheet" type="text/css">
 <script type="text/javascript">
 	window.print();
@@ -32,10 +32,8 @@ else {
 <table class="table-list" width="600" border="0" cellspacing="0" cellpadding="2">
   <tr>
     <td height="87" colspan="4" align="center">
-		<strong>APOTEK & KLINIK FITRIA</strong><br />
-        <strong>NPWP/ PKP : </strong>1.111111.11111<br />
-        <strong>Tanggal Pengukuhan : </strong>10-03-2010<br />
-        Kota Metro, Lampung </td>
+		<strong>APOTEK & KLINIK</strong><br />
+        <strong>NPWP/ PKP : </strong><br /> </td>
   </tr>
   <tr>
     <td colspan="2"><strong>No. Nota :</strong> <?php echo $kolomData['no_rawat']; ?></td>

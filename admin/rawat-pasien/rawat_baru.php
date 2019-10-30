@@ -97,7 +97,7 @@ if(isset($_POST['btnSimpan'])){
 			
 	# JIKA ADA PESAN ERROR DARI VALIDASI
 	if (count($pesanError)>=1 ){
-		echo "<div class='mssgBox'>";
+		echo "<div class='alert alert-danger'>";
 		echo "<img src='../images/attention.png'> <br><hr>";
 			$noPesan=0;
 			foreach ($pesanError as $indeks=>$pesan_tampil) { 
@@ -182,66 +182,52 @@ $dataUangBayar	= isset($_POST['txtUangBayar']) ? $_POST['txtUangBayar'] : '';
 $dataDokter		= isset($_POST['cmbDokter']) ? $_POST['cmbDokter'] : '';
 $dataTindakan	= isset($_POST['cmbTindakan']) ? $_POST['cmbTindakan'] : '';
 ?>
-<form action="<?php $_SERVER['PHP_SELF']; ?>" method="post" name="form1" target="_self">
-  <table width="800" cellspacing="1"  class="table-list">
-    <tr>
-      <td colspan="3"><h1> RAWAT PASIEN </h1></td>
-    </tr>
-    <tr>
-      <td bgcolor="#CCCCCC"><strong>DATA RAWAT </strong></td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td width="26%"><strong>No. Rawat </strong></td>
-      <td width="1%"><strong>:</strong></td>
-      <td width="73%"><input name="txtNomor" value="<?php echo $noTransaksi; ?>" size="23" maxlength="20" readonly="readonly"/></td>
-    </tr>
-    <tr>
-      <td><strong>Tgl. Rawat </strong></td>
-      <td><strong>:</strong></td>
-      <td><input name="txtTanggal" type="text" class="tcal" value="<?php echo $dataTanggal; ?>" size="23" /></td>
-    </tr>
-    <tr>
-      <td><strong>Nomor RM </strong></td>
-      <td><strong>:</strong></td>
-      <td><input name="txtNomorRM" value="<?php echo $NomorRM; ?>" size="23" maxlength="20" />
-        * pilih dari <a href="?page=Pencarian-Pasien" target="_self">daftar pasien</a>, lalu klik menu <strong>Rawat</strong> </td>
-    </tr>
-    <tr>
-      <td><strong>Nama Pasien </strong></td>
-      <td><strong>:</strong></td>
-      <td><input name="txtPasien" value="<?php echo $dataPasien; ?>" size="80" maxlength="100" readonly="readonly"/></td>
-    </tr>
-    <tr>
-      <td><strong>Hasil Diagnosa Dokter </strong></td>
-      <td><strong>:</strong></td>
-      <td><input name="txtDiagnosa" value="<?php echo $dataDiagnosa; ?>" size="80" maxlength="100" /></td>
-    </tr>
-    <tr>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td><strong>Uang Bayar/ DP (Rp.) </strong></td>
-      <td><strong>:</strong></td>
-      <td><input name="txtUangBayar" value="<?php echo $dataUangBayar; ?>" size="23" maxlength="23" /></td>
-    </tr>
-    <tr>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td bgcolor="#CCCCCC"><strong>INPUT TINDAKAN </strong></td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td><strong>Dokter </strong></td>
-      <td><strong>:</strong></td>
-      <td><select name="cmbDokter">
+<form action="<?php $_SERVER['PHP_SELF']; ?>" method="post" name="form1" target="_self" class="form-horizontal">
+  <div class="form-group">
+    <label class="col-sm-2 control-label">No Rawat</label>
+    <div class="col-sm-10">
+     <input name="txtNomor" value="<?php echo $noTransaksi; ?>" size="23" maxlength="20" readonly="readonly" class="form-control"/>
+	</div>
+  </div>
+    <div class="form-group">
+    <label class="col-sm-2 control-label">Tgl Rawat</label>
+    <div class="col-sm-10">
+     <input name="txtTanggal" type="text" class="tcal" value="<?php echo $dataTanggal; ?>" size="23" />
+	</div>
+  </div>
+    <div class="form-group">
+    <label class="col-sm-2 control-label">Nomor RM</label>
+    
+    <div class="col-sm-8">
+    <input name="txtNomorRM" value="<?php echo $NomorRM; ?>" size="23" maxlength="10" class="form-control" readonly="readonly"/>
+      * pilih dari daftar pasien, lalu klik menu <strong>daftar</strong>
+  	</div>
+  	<div class="col-sm-2">
+    	<a href="?page=Pencarian-Pasien" target="_self" class="btn btn-success"><i class="fa fa-users" aria-hidden="true"></i></a>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Nama Pasien</label>
+    <div class="col-sm-10">
+     <input name="txtPasien" value="<?php echo $dataPasien; ?>" size="80" maxlength="100" readonly="readonly" class="form-control"/>
+	</div>
+  </div>
+
+   <div class="form-group">
+    <label class="col-sm-2 control-label">Hasil Diagnosa Dokter</label>
+    <div class="col-sm-10">
+     <textarea name="txtDiagnosa" value="<?php echo $dataDiagnosa; ?>" size="80" maxlength="100" class="form-control"></textarea>
+	</div>
+  </div>
+
+
+
+  <div class="alert alert-success">
+  	<h4>Tambah tindakan</h4>
+     <div class="form-group">
+    <label class="col-sm-2 control-label">Dokter</label>
+    <div class="col-sm-10">
+     <select name="cmbDokter" class="form-control">
           <option value="KOSONG">....</option>
           <?php
 	  $bacaSql = "SELECT * FROM dokter ORDER BY kd_dokter";
@@ -254,12 +240,14 @@ $dataTindakan	= isset($_POST['cmbTindakan']) ? $_POST['cmbTindakan'] : '';
 		echo "<option value='$bacaData[kd_dokter]' $cek>[ $bacaData[kd_dokter] ]  $bacaData[nm_dokter]</option>";
 	  }
 	  ?>
-        </select> </td>
-    </tr>
-    <tr>
-      <td><strong>Tindakan Pasien </strong></td>
-      <td><strong>:</strong></td>
-      <td><select name="cmbTindakan">
+        </select>
+	</div>
+  </div>
+
+       <div class="form-group">
+    <label class="col-sm-2 control-label">Tindakan</label>
+    <div class="col-sm-10">
+     <select name="cmbTindakan" class="form-control">
         <option value="KOSONG">....</option>
         <?php
 	  $bacaSql = "SELECT * FROM tindakan ORDER BY kd_tindakan";
@@ -273,39 +261,31 @@ $dataTindakan	= isset($_POST['cmbTindakan']) ? $_POST['cmbTindakan'] : '';
 		echo "<option value='$bacaData[kd_tindakan]' $cek>[ $bacaData[kd_tindakan] ]  $bacaData[nm_tindakan] | $harga</option>";
 	  }
 	  ?>
-      </select> </td>
-    </tr>
-    <tr>
-      <td><strong>Harga Tindakan (Rp) </strong></td>
-      <td><strong>:</strong></td>
-      <td><b>
-        <input name="txtHarga" size="18" maxlength="12" />
-        <input name="btnTambah" type="submit" style="cursor:pointer;" value=" Tambah " />
-      </b></td>
-    </tr>
-    <tr>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td><input name="btnSimpan" type="submit" style="cursor:pointer;" value=" SIMPAN TRANSAKSI " /></td>
-    </tr>
-  </table>
-  <br>
-  <table class="table-list" width="800" border="0" cellspacing="1" cellpadding="2">
+      </select>
+	</div>
+  </div>
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Harga Tindakan (Rp)</label>
+    <div class="col-sm-8">
+    <input name="txtHarga" size="18" maxlength="12" class="form-control"/>
+        
+	</div>
+	<div class="col-sm-2"><input name="btnTambah" type="submit" style="cursor:pointer;" value=" Tambah " class="btn btn-success" /></div>
+  </div>
+</div>
+
+  <table class="table table-striped">
     <tr>
       <th colspan="6"><strong>DAFTAR TINDAKAN </strong></th>
     </tr>
     <tr>
-      <td width="27" bgcolor="#CCCCCC"><strong>No</strong></td>
-      <td width="58" bgcolor="#CCCCCC"><strong>Kode </strong></td>
-      <td width="365" bgcolor="#CCCCCC"><strong>Nama Tindakan </strong></td>
-      <td width="190" bgcolor="#CCCCCC"><strong>Dokter</strong></td>
-      <td width="90" align="right" bgcolor="#CCCCCC"><strong>Harga (Rp) </strong></td>
-      <td width="39">&nbsp;</td>
+      <td width="27" ><strong>No</strong></td>
+      <td width="58" ><strong>Kode </strong></td>
+      <td width="300"><strong>Nama Tindakan </strong></td>
+      <td width="190"><strong>Dokter</strong></td>
+      <td width="150"><strong>Harga (Rp) </strong></td>
+      <td width="39"><strong>Tools</strong></td>
     </tr>
     <?php
 	// Query SQL menampilkan data Tindakan dalam TMP_RAWAT
@@ -325,13 +305,29 @@ $dataTindakan	= isset($_POST['cmbTindakan']) ? $_POST['cmbTindakan'] : '';
 		<td><?php echo $tmpData['nm_tindakan']; ?></td>
 		<td><?php echo $tmpData['nm_dokter']; ?></td>
 		<td align="right"><?php echo format_angka($tmpData['harga']); ?></td>
-		<td><a href="?Aksi=Hapus&id=<?php echo $tmpData['id']; ?>" target="_self">Delete</a></td>
+		<td><a href="?Aksi=Hapus&id=<?php echo $tmpData['id']; ?>" target="_self" class="btn btn-danger"><i class="fa fa-trash"></i></a></td>
 	  </tr>
     <?php } ?>
     <tr>
       <td colspan="4" align="right"><b> GRAND TOTAL  : </b></td>
-      <td align="right" bgcolor="#CCCCCC"><strong>Rp. <?php echo format_angka($totalHarga); ?></strong></td>
+      <td align="right"><strong>Rp. <?php echo format_angka($totalHarga); ?></strong></td>
       <td>&nbsp;</td>
     </tr>
   </table>
+
+      <div class="form-group">
+    <label class="col-sm-2 control-label">Uang Bayar/ DP (Rp.)</label>
+    <div class="col-sm-10">
+     <input name="txtUangBayar" value="<?php echo $dataUangBayar; ?>" size="23" maxlength="23" class="form-control"/>
+	</div>
+  </div>
+
+   <div class="form-group">
+  	<div class="col-sm-9"></div>
+  	<div class="col-sm-3">
+  	<button class="btn btn-danger" onclick="close_window()">BATAL</button>
+  		<input type="submit" name="btnSimpan" class="btn btn-primary" value=" SIMPAN ">
+	</div>
+  </div>
+
 </form>

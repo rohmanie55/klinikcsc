@@ -51,7 +51,7 @@ if(isset($_POST['btnSimpan'])){
 	
 	# JIKA ADA PESAN ERROR DARI VALIDASI
 	if (count($pesanError)>=1 ){
-		echo "<div class='mssgBox'>";
+		echo "<div class='alert alert-danger'>";
 		echo "<img src='../images/attention.png'> <br><hr>";
 			$noPesan=0;
 			foreach ($pesanError as $indeks=>$pesan_tampil) { 
@@ -115,7 +115,7 @@ $dataTindakan	= isset($_POST['cmbTindakan']) ? $_POST['cmbTindakan'] : '';
     <label class="col-sm-2 control-label">Nomor RM</label>
     
     <div class="col-sm-8">
-    <input name="txtNomorRM" value="<?php echo $NomorRM; ?>" size="23" maxlength="10" class="form-control" />
+    <input name="txtNomorRM" value="<?php echo $NomorRM; ?>" size="23" maxlength="10" class="form-control" readonly="readonly"/>
       * pilih dari daftar pasien, lalu klik menu <strong>daftar</strong>
   	</div>
   	<div class="col-sm-2">
