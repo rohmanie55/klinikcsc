@@ -104,49 +104,56 @@ $dataJamJanji	= isset($_POST['txtJamJanji']) ? $_POST['txtJamJanji'] : '';
 $dataKeluhan	= isset($_POST['txtKeluhan']) ? $_POST['txtKeluhan'] : '';
 $dataTindakan	= isset($_POST['cmbTindakan']) ? $_POST['cmbTindakan'] : '';
 ?>
-<form action="<?php $_SERVER['PHP_SELF']; ?>" method="post" name="form1" target="_self">
-  <table class="table-list" width="100%" border="0" cellspacing="1" cellpadding="3">
-    <tr>
-      <th colspan="3" scope="col">PENDAFTARAN PASIEN </th>
-    </tr>
-    <tr>
-      <td width="19%"><strong>Kode</strong></td>
-      <td width="1%"><strong>:</strong></td>
-      <td width="80%"><input name="textfield" value="<?php echo $dataKode; ?>" size="10" maxlength="10" readonly="readonly"/></td>
-    </tr>
-    <tr>
-      <td><strong>Nomor RM </strong></td>
-      <td><strong>:</strong></td>
-      <td><input name="txtNomorRM" value="<?php echo $NomorRM; ?>" size="23" maxlength="10" />
-      * pilih dari <a href="?page=Pencarian-Pasien" target="_self">daftar pasien</a>, lalu klik menu <strong>daftar</strong> </td>
-    </tr>
-    <tr>
-      <td><strong>Nama Pasien </strong></td>
-      <td><strong>:</strong></td>
-      <td><input name="txtPasien" value="<?php echo $dataPasien; ?>" size="80" maxlength="100" readonly="readonly"/></td>
-    </tr>
-    <tr>
-      <td><strong>Tgl.  Daftar </strong></td>
-      <td><strong>:</strong></td>
-      <td><input name="txtTglDaftar" type="text" class="tcal" value="<?php echo $dataTglDaftar; ?>" /></td>
-    </tr>
-    <tr>
-      <td><strong>Tgl.  &amp; Jam Janji </strong></td>
-      <td><strong>:</strong></td>
-      <td><input name="txtTglJanji" type="text" class="tcal" value="<?php echo $dataTglJanji; ?>" />
+<form action="<?php $_SERVER['PHP_SELF']; ?>" method="post" name="form1" target="_self" class="form-horizontal">
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Kode</label>
+    <div class="col-sm-10">
+    <input name="textfield" value="<?php echo $dataKode; ?>" size="10" readonly="readonly" class="form-control" />
+	</div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Nomor RM</label>
+    
+    <div class="col-sm-8">
+    <input name="txtNomorRM" value="<?php echo $NomorRM; ?>" size="23" maxlength="10" class="form-control" />
+      * pilih dari daftar pasien, lalu klik menu <strong>daftar</strong>
+  	</div>
+  	<div class="col-sm-2">
+    	<a href="?page=Pencarian-Pasien" target="_self" class="btn btn-success"><i class="fa fa-users" aria-hidden="true"></i></a>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Nama Pasien</label>
+    <div class="col-sm-10">
+    <input name="txtPasien" value="<?php echo $dataPasien; ?>" size="80" maxlength="100" readonly="readonly" class="form-control" />
+</div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Tgl Daftar</label>
+    <div class="col-sm-10">
+    <input name="txtTglDaftar" type="text" class="tcal" value="<?php echo $dataTglDaftar; ?>" />
+</div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Tgl/Jam Janji</label>
+    <div class="col-sm-10">
+    <input name="txtTglJanji" type="text" class="tcal" value="<?php echo $dataTglJanji; ?>" />
         / 
-        <input name="txtJamJanji" value="<?php echo $dataJamJanji; ?>" size="10" maxlength="8" />
-        <strong>ex:</strong> 12:30 </td>
-    </tr>
-    <tr>
-      <td><strong>Keluhan Pasien </strong></td>
-      <td><strong>:</strong></td>
-      <td><input name="txtKeluhan" value="<?php echo $dataKeluhan; ?>" size="80" maxlength="100" /></td>
-    </tr>
-    <tr>
-      <td><strong>Tindakan Pasien </strong></td>
-      <td><strong>:</strong></td>
-      <td><select name="cmbTindakan">
+        <input name="txtJamJanji" value="<?php echo $dataJamJanji; ?>" size="10" maxlength="8"  />
+        <strong>ex:</strong> 12:30 
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Keluhan Pasien</label>
+    <div class="col-sm-10">
+    <input name="txtKeluhan" value="<?php echo $dataKeluhan; ?>" size="80" maxlength="100" class="form-control" />
+</div>
+  </div>
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Keluhan Pasien</label>
+    <div class="col-sm-10">
+  <select name="cmbTindakan" class="form-control">
         <option value="KOSONG">....</option>
         <?php
 	  $dataSql = "SELECT * FROM tindakan ORDER BY kd_tindakan";
@@ -158,12 +165,14 @@ $dataTindakan	= isset($_POST['cmbTindakan']) ? $_POST['cmbTindakan'] : '';
 		echo "<option value='$dataRow[kd_tindakan]' $cek>[ $dataRow[kd_tindakan] ]  $dataRow[nm_tindakan]</option>";
 	  }
 	  ?>
-      </select></td>
-    </tr>
-    <tr>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td><input type="submit" name="btnSimpan" value=" SIMPAN "></td>
-    </tr>
-  </table>
+      </select>
+  </div>
+  </div>
+  <div class="form-group">
+  	<div class="col-sm-9"></div>
+  	<div class="col-sm-3">
+  	<button class="btn btn-danger" onclick="close_window()">BATAL</button>
+  <input type="submit" name="btnSimpan" class="btn btn-primary" value=" SIMPAN ">
+</div>
+  </div>
 </form>

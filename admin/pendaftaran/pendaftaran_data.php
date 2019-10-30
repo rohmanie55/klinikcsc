@@ -8,20 +8,8 @@ $pageSql = "SELECT * FROM pendaftaran";
 $pageQry = mysql_query($pageSql, $koneksidb) or die ("error paging: ".mysql_error());
 $jml	 = mysql_num_rows($pageQry);
 $max	 = ceil($jml/$row);
-?><table width="800" border="0" cellpadding="2" cellspacing="1" class="table-border">
-  <tr>
-    <td width="5" align="right">&nbsp;</td>
-    <td colspan="2" align="right"><h1><b>DATA PENDAFTARAN </b></h1></td>
-  </tr>
-  
-  <tr>
-    <td>&nbsp;</td>
-    <td colspan="2">&nbsp;</td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td colspan="2">
-	<table class="table-list" width="100%" border="0" cellspacing="1" cellpadding="2">
+?>
+	<table class="table table-striped" width="100%" border="0" cellspacing="1" cellpadding="2">
       <tr>
         <th width="28" align="center"><strong>No</strong></th>
         <th width="78"><strong>No. Daftar </strong></th>
@@ -30,7 +18,7 @@ $max	 = ceil($jml/$row);
         <th width="174"><strong>Nama Pasien </strong></th>
         <th width="87"><strong>Tgl. Janji </strong></th>
         <th width="115"><strong>Jam. Janji </strong></th>
-        <td colspan="3" align="center" bgcolor="#CCCCCC"><strong>Tools</strong></td>
+        <td align="center" bgcolor="#CCCCCC"><strong>Tools</strong></td>
       </tr>
       <?php
 	$mySql = "SELECT pendaftaran.*, pasien.nm_pasien, tindakan.nm_tindakan 
@@ -52,22 +40,19 @@ $max	 = ceil($jml/$row);
         <td><?php echo $myData['nm_pasien']; ?></td>
         <td><?php echo IndonesiaTgl($myData['tgl_janji']); ?></td>
         <td><?php echo $myData['jam_janji']; ?></td>
-        <td width="41" align="center"><a href="../cetak/pendaftaran_cetak.php?Kode=<?php echo $Kode; ?>" target="_blank">Cetak</a></td>
-        <td width="41" align="center"><a href="?page=Pendaftaran-Ubah&Kode=<?php echo $Kode; ?>" target="_self">Edit</a></td>
-        <td width="40" align="center"><a href="?page=Pendaftaran-Hapus&Kode=<?php echo $Kode; ?>" target="_self" alt="Delete Data" onclick="return confirm('ANDA YAKIN AKAN MENGHAPUS DATA PENDAFTARAN INI ... ?')">Delete</a></td>
+        <td width="41" align="center"><a href="../cetak/pendaftaran_cetak.php?Kode=<?php echo $Kode; ?>" target="_blank" class="btn btn-default"><i class="fa fa-print"></i></a><a href="?page=Pendaftaran-Ubah&Kode=<?php echo $Kode; ?>" target="_self" class="btn btn-success"><i class="fa fa-edit"></i></a>
+        <a href="?page=Pendaftaran-Hapus&Kode=<?php echo $Kode; ?>" target="_self" alt="Delete Data" onclick="return confirm('ANDA YAKIN AKAN MENGHAPUS DATA PENDAFTARAN INI ... ?')" class="btn btn-danger"><i class="fa fa-trash"></i></a></td>
       </tr>
       <?php } ?>
-    </table></td>
-  </tr>
-  <tr class="selKecil">
-    <td>&nbsp;</td>
-    <td width="299"><b>Jumlah Data :</b></td>
-    <td width="480" align="right"><b>Halaman ke :</b>
-      <?php
-	for ($h = 1; $h <= $max; $h++) {
-		$list[$h] = $row * $h - $row;
-		echo " <a href='?page=Pendaftaran-Tampil&hal=$list[$h]'>$h</a> ";
-	}
-	?></td>
-  </tr>
-</table>
+      <tr>
+        <td colspan="3"><strong>Jumlah Data :</strong> <?php echo $jml; ?> </td>
+        <td colspan="4" align="right"><strong>Halaman ke :</strong>
+        <?php
+     for ($h = 1; $h <= $max; $h++) {
+    $list[$h] = $row * $h - $row;
+    echo " <a href='?page=Pendaftaran-Tampil&hal=$list[$h]'>$h</a> ";
+  }
+      ?></td>
+      </tr>
+    </table>
+  
