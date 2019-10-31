@@ -9,30 +9,61 @@ date_default_timezone_set("Asia/Jakarta");
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>TRANSAKSI PENJUALAN - APOTEK KLINIK </title>
-<link href="../dist/styles/style.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" type="text/css" href="../plugins/tigra_calendar/tcal.css" />
-<script type="text/javascript" src="../plugins/tigra_calendar/tcal.js"></script> 
 </head>
 <body>
-<table width="400" border="0" cellspacing="0" cellpadding="0">
-  <tr>
-    <td><img src="../images/logo.png" width="499" height="80"></td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td><a href="?page=Penjualan-Baru" target="_self">Penjualan Baru</a> | <a href="?page=Penjualan-Tampil" target="_self">Tampil Penjualan</a> </td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-</table>
+	<link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="../bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+
+	<link href="../dist/css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	
+	<link rel="stylesheet" type="text/css" href="../plugins/tigra_calendar/tcal.css" />
+
+	<style type="text/css">
+		.card {
+		  /* Add shadows to create the "card" effect */
+		  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+		  transition: 0.3s;
+		  background-color: white;
+		}
+	</style>
+	<script type="text/javascript" src="../plugins/tigra_calendar/tcal.js"></script> 
+	</head>
+	<body>
+	<nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0"> 
+   <div class="navbar-header">
+        <a class="navbar-brand" href="http://localhost/klinikcsc/admin"><img src="../images/logo.png" style="height: 30px;display: inline;">Cikarang Skin Centre</a>
+    </div>
+            <!-- /.navbar-header -->
+	</nav>
+
+	<div class="container">
+		<div class="row" style="margin-top: 50px;">
+			<div class="col-md-2"></div>
+			<div class="col-md-8">
+				<div style="margin-bottom: 20px;">
+					<a href="?page=Penjualan-Baru" target="_self" class="btn card btn-default">Penjualan Baru</a>
+			<a href="?page=Penjualan-Tampil" target="_self" class="btn card btn-default">Tampil Penjualan </a>
+				</div>
+				<div class="card col-md-12">
 
 <?php 
 # KONTROL MENU PROGRAM
 if(isset($_GET['page'])) {
 	// Jika mendapatkan variabel URL ?page
+	$page = $_GET['page'];
+
+		?>
+		<div>
+		<h2><? echo $page ?><h2>
+		
+		</div>
+		<?
+
 	switch($_GET['page']){				
 		case 'Penjualan-Baru' :
 			if(!file_exists ("penjualan_baru.php")) die ("Empty Main Page!"); 
@@ -49,8 +80,35 @@ if(isset($_GET['page'])) {
 	}
 }
 else {
+	?>
+		<div>
+		<h2>Penjualan-Baru<h2>
+		
+		</div>
+		<?
+
 	include "penjualan_baru.php";
 }
 ?>
+</div>
+</div>
+		<div class="col-md-2">
+		</div>
+	</div>
+	</div>
+	
+		<script src="../bower_components/jquery/dist/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	  <script src="../bower_components/metisMenu/dist/metisMenu.min.js"></script>
+	      <script src="../dist/js/sb-admin-2.js"></script>
+	      <script type="text/javascript">
+	      	function close_window() {
+  if (confirm("Batalkan?")) {
+    close();
+  }
+}
+	      </script>
 </body>
 </html>

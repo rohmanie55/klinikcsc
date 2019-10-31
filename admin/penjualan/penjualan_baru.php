@@ -167,71 +167,43 @@ if(isset($_POST['btnSimpan'])){
 
 # TAMPILKAN DATA KE FORM
 $noTransaksi 	= buatKode("penjualan", "JL");
+$kode           = isset($_GET['kode']) ?  $_GET['kode'] : '';
 $dataTanggal 	= isset($_POST['txtTanggal']) ? $_POST['txtTanggal'] : date('d-m-Y');
 $dataPelanggan	= isset($_POST['txtPelanggan']) ? $_POST['txtPelanggan'] : 'Pasien';
 $dataKeterangan	= isset($_POST['txtKeterangan']) ? $_POST['txtKeterangan'] : '';
 $dataUangBayar	= isset($_POST['txtUangBayar']) ? $_POST['txtUangBayar'] : '';
 ?>
-<form action="<?php $_SERVER['PHP_SELF']; ?>" method="post" name="form1" target="_self">
-  <table width="800" cellpadding="3" cellspacing="1"  class="table-list">
-    <tr>
-      <td colspan="3"><h1>  PENJUALAN OBAT </h1></td>
-    </tr>
-    <tr>
-      <td bgcolor="#CCCCCC"><strong>DATA PENJUALAN </strong></td>
-      <td bgcolor="#CCCCCC">&nbsp;</td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td width="26%"><strong>No. Penjualan </strong></td>
-      <td width="2%"><strong>:</strong></td>
-      <td width="72%"><input name="txtNomor" value="<?php echo $noTransaksi; ?>" size="23" maxlength="23" readonly="readonly"/></td>
-    </tr>
-    <tr>
-      <td><strong>Tgl. Penjualan </strong></td>
-      <td><strong>:</strong></td>
-      <td><input name="txtTanggal" type="text" class="tcal" value="<?php echo $dataTanggal; ?>" size="23" maxlength="23" /></td>
-    </tr>
-    <tr>
-      <td><strong>Pelanggan</strong></td>
-      <td><strong>:</strong></td>
-      <td><input name="txtPelanggan" value="<?php echo $dataPelanggan; ?>" size="70" maxlength="100" /></td>
-    </tr>
-    <tr>
-      <td><strong>Keterangan</strong></td>
-      <td><strong>:</strong></td>
-      <td><input name="txtKeterangan" value="<?php echo $dataKeterangan; ?>" size="70" maxlength="100" /></td>
-    </tr>
-    <tr>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td bgcolor="#CCCCCC"><strong>INPUT  OBAT </strong></td>
-      <td bgcolor="#CCCCCC">&nbsp;</td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td><strong>Kode Obat </strong></td>
-      <td><strong>:</strong></td>
-      <td><b>
-        <input name="txtKodeObat" size="40" maxlength="20" />
-        <a href="?page=Pencarian-Obat" target="_blank">Pencarian Obat</a></b></td>
-    </tr>
-    <tr>
-      <td><b>Jumlah </b></td>
-      <td><b>:</b></td>
-      <td><b>
-        <input class="angkaC" name="txtJumlah" size="10" maxlength="4" value="1" 
+<form action="<?php $_SERVER['PHP_SELF']; ?>" method="post" name="form1" target="_self" class="form-horizontal">
+	
+  	<div class="alert alert-success">
+  		<h4>Input Obat</h4>
+
+  		 <div class="form-group">
+    <label class="col-sm-2 control-label">Kode Obat</label>
+    
+    <div class="col-sm-8">
+   <input name="txtKodeObat" value="<?php echo $kode; ?>" size="23" maxlength="10" class="form-control" readonly="readonly"/>
+      * pilih dari daftar obat, lalu klik menu <strong>daftar</strong>
+  	</div>
+  	<div class="col-sm-2">
+    	<a href="?page=Pencarian-Obat" target="_self" class="btn btn-success"><i class="fa fa-search"></i></a>
+    </div>
+  </div>
+
+  		<div class="form-group">
+	    <label class="col-sm-2 control-label">Jumlah</label>
+	    <div class="col-sm-6">
+	    	 <input class="angkaC form-control" name="txtJumlah"
 				 onblur="if (value == '') {value = '1'}" 
-				 onfocus="if (value == '1') {value =''}"/>
-        <input name="btnTambah" type="submit" style="cursor:pointer;" value=" Tambah " />
-      </b></td>
-    </tr>
-  </table>
-  <br>
-  <table class="table-list" width="800" border="0" cellspacing="1" cellpadding="2">
+				 onfocus="if (value == '1') {value =''}" />
+		</div>
+		<div class="col-sm-4">
+			<input name="btnTambah" type="submit" style="cursor:pointer;" value=" Tambah " class="btn btn-default" />
+		</div>
+  		</div>
+  	</div>
+
+  	  <table class="table table-striped" width="800" border="0" cellspacing="1" cellpadding="2">
     <tr>
       <th colspan="7">DAFTAR OBAT </th>
     </tr>
@@ -273,24 +245,47 @@ while($tmpData = mysql_fetch_array($tmpQry)) {
       <td align="right" bgcolor="#F5F5F5"><strong><?php echo format_angka($totalBayar); ?></strong></td>
       <td bgcolor="#F5F5F5">&nbsp;</td>
     </tr>
-    <tr>
-      <td colspan="4" align="right" bgcolor="#F5F5F5"><strong>UANG BAYAR (Rp.) : </strong></td>
-      <td bgcolor="#F5F5F5"><input name="txtTotBayar" type="hidden" value="<?php echo $totalBayar; ?>" /></td>
-      <td bgcolor="#F5F5F5"><input name="txtUangBayar" value="<?php echo $dataUangBayar; ?>" size="16" maxlength="16"/></td>
-      <td bgcolor="#F5F5F5">&nbsp;</td>
-    </tr>
-    <tr>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td colspan="6" align="right"><input name="btnSimpan" type="submit" style="cursor:pointer;" value=" SIMPAN TRANSAKSI " /></td>
-      <td>&nbsp;</td>
-    </tr>
   </table>
+  <div class="form-group">
+	    <label class="col-sm-2 control-label">No Penjualan</label>
+	    <div class="col-sm-10">
+	     <input name="txtNomor" value="<?php echo $noTransaksi; ?>" size="23" maxlength="23" readonly="readonly" class="form-control"/>
+		</div>
+  	</div>
+  	<div class="form-group">
+	    <label class="col-sm-2 control-label">Tgl Penjualan</label>
+	    <div class="col-sm-10">
+	     <input name="txtTanggal" type="text" class="tcal" value="<?php echo $dataTanggal; ?>" class="form-control"/>
+		</div>
+  	</div>
+  	<div class="form-group">
+	    <label class="col-sm-2 control-label">Pelanggan</label>
+	    <div class="col-sm-10">
+	     <input name="txtPelanggan" value="<?php echo $dataPelanggan; ?>" class="form-control"/>
+		</div>
+  	</div>
+  	<div class="form-group">
+	    <label class="col-sm-2 control-label">Keterangan</label>
+	    <div class="col-sm-10">
+	     <textarea name="txtKeterangan" value="<?php echo $dataKeterangan; ?>" class="form-control">
+	     </textarea>
+		</div>
+  	</div>
+
+  	<div class="form-group">
+	    <label class="col-sm-2 control-label">UANG BAYAR (Rp.)</label>
+	    <div class="col-sm-10">
+	     <input name="txtTotBayar" type="hidden" value="<?php echo $totalBayar; ?>" />
+	     <input name="txtUangBayar" value="<?php echo $dataUangBayar; ?>" class="form-control"/>
+		</div>
+  	</div>
+  	<div class="form-group">
+  		<div class="col-sm-7">
+  		</div>
+  		<div class="col-sm-5">
+  			<button class="btn btn-danger" onclick="close_window()">BATAL</button>
+  		<input name="btnSimpan" type="submit" style="cursor:pointer;" value=" SIMPAN TRANSAKSI " class="btn btn-primary" />
+  		</div>
+  	</div>
+
 </form>

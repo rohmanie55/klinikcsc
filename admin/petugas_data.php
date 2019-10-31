@@ -4,7 +4,7 @@ include_once "library/inc.seslogin.php";
 # UNTUK PAGING (PEMBAGIAN HALAMAN)
 $row = 20;
 $hal = isset($_GET['hal']) ? $_GET['hal'] : 0;
-$pageSql = "SELECT * FROM petugas";
+$pageSql = "SELECT * FROM petugas where level != 'user'";
 $pageQry = mysql_query($pageSql, $koneksidb) or die ("error paging: ".mysql_error());
 $jml	 = mysql_num_rows($pageQry);
 $max	 = ceil($jml/$row);
@@ -39,7 +39,7 @@ $max	 = ceil($jml/$row);
         </tr></thead>
 
       <?php
-	$mySql 	= "SELECT * FROM petugas ORDER BY kd_petugas ASC";
+	$mySql 	= "SELECT * FROM petugas  where level != 'user' ORDER BY kd_petugas ASC";
 	$myQry 	= mysql_query($mySql, $koneksidb)  or die ("Query  salah : ".mysql_error());
 	$nomor  = 0; 
 	while ($myData = mysql_fetch_array($myQry)) {

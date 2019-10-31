@@ -63,7 +63,7 @@ date_default_timezone_set("Asia/Jakarta");
     <!-- Navigation -->
 <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0"> 
    <div class="navbar-header">
-        <a class="navbar-brand" href="index.html"><img src="./images/logo.png" style="height: 30px;display: inline;">Cikarang Skin Centre</a>
+        <a class="navbar-brand" href="http://localhost/klinikcsc/admin"><img src="./images/logo.png" style="height: 30px;display: inline;">Cikarang Skin Centre</a>
     </div>
             <!-- /.navbar-header -->
     <?php include "menu.php";?>

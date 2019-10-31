@@ -34,8 +34,7 @@ else {
     <td height="87" colspan="5" align="center">
 		<strong>APOTEK & KLINIK FITRIA</strong><br />
         <strong>NPWP/ PKP : </strong>1.111111.11111<br />
-        <strong>Tanggal Pengukuhan : </strong>10-03-2010<br />
-        Kota Metro, Lampung </td>
+         </td>
   </tr>
   <tr>
     <td colspan="2"><strong>No Nota :</strong> <?php echo $kolomData['no_penjualan']; ?></td>
