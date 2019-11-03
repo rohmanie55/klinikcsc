@@ -2,8 +2,8 @@
 include_once "../library/inc.seslogin.php";
 
 # HAPUS DAFTAR tindakan DI TMP
-if(isset($_GET['Aksi'])){
-	if(trim($_GET['Aksi'])=="Hapus"){
+if(isset($_GET['at'])){
+	if(trim($_GET['at'])=="del"){
 		# Hapus Tmp jika datanya sudah dipindah
 		$id			= $_GET['id'];
 		$userLogin	= $_SESSION['SES_LOGIN'];
@@ -11,15 +11,30 @@ if(isset($_GET['Aksi'])){
 		$mySql = "DELETE FROM tmp_rawat WHERE id='$id' AND kd_petugas='$userLogin'";
 		mysql_query($mySql, $koneksidb) or die ("Gagal kosongkan tmp".mysql_error());
 	}
-	if(trim($_GET['Aksi'])=="Sucsses"){
+	if(trim($_GET['at'])=="succ"){
+		echo "<b>DATA BERHASIL DISIMPAN</b> <br><br>";
+	}
+}
+
+# HAPUS DAFTAR OBAT DI TMP
+if(isset($_GET['ao'])){
+	if(trim($_GET['ao'])=="del"){
+		# Hapus Tmp jika datanya sudah dipindah
+		$mySql = "DELETE FROM tmp_penjualan WHERE id='".$_GET['id']."' AND kd_petugas='".$_SESSION['SES_LOGIN']."'";
+		mysql_query($mySql, $koneksidb) or die ("Gagal kosongkan tmp".mysql_error());
+	}
+	if(trim($_GET['ao'])=="succ"){
 		echo "<b>DATA BERHASIL DISIMPAN</b> <br><br>";
 	}
 }
 // =========================================================================
 
 # TOMBOL TAMBAH DIKLIK
-if(isset($_POST['btnTambah'])){
+if(isset($_POST['btnTambahTindakan'])){
 	$pesanError = array();
+	if (trim($_POST['txtNomorRM'])=="") {
+			$pesanError[] = "Data <b>Pasien belum terisi</b>, harap pilih pasien terlebih dahulu</b> !";		
+	}
 	if (trim($_POST['cmbDokter'])=="KOSONG") {
 		$pesanError[] = "Data <b>Nama Dokter</b> belum dipilih, harus Anda pilih dari combo !";		
 	}
@@ -42,7 +57,7 @@ if(isset($_POST['btnTambah'])){
 
 	# JIKA ADA PESAN ERROR DARI VALIDASI
 	if (count($pesanError)>=1 ){
-		echo "<div class='mssgBox'>";
+		echo "<div class='alert alert-danger'>";
 		echo "<img src='../images/attention.png'> <br><hr>";
 			$noPesan=0;
 			foreach ($pesanError as $indeks=>$pesan_tampil) { 
@@ -59,12 +74,73 @@ if(isset($_POST['btnTambah'])){
 
 		# SIMPAN DATA KE DATABASE (tmp_rawat)
 		# Jika jumlah error pesanError tidak ada, skrip di bawah dijalankan
-		$tmpSql 	= "INSERT INTO tmp_rawat (kd_tindakan, harga, kd_dokter, bagi_hasil_dokter, kd_petugas) 
-					   VALUES ('$cmbTindakan', '$txtHarga', '$cmbDokter', '$bacaData[bagi_hasil]', '".$_SESSION['SES_LOGIN']."')";
+		$tmpSql 	= "INSERT INTO tmp_rawat (kd_tindakan, harga, kd_dokter, bagi_hasil_dokter, kd_petugas, kd_pasien) 
+					   VALUES ('$cmbTindakan', '$txtHarga', '$cmbDokter', '$bacaData[bagi_hasil]', '".$_SESSION['SES_LOGIN']."', '$txtNomorRM')";
 		mysql_query($tmpSql, $koneksidb) or die ("Gagal Query tmp : ".mysql_error());				
 
 	}
 }
+
+# ========================================================================================================
+# JIKA TOMBOL Tambah obat  DIKLIK
+
+
+
+	# TOMBOL TAMBAH (INPUT OBAT) DIKLIK
+	if(isset($_POST['btnTambahObat'])){
+		$pesanError = array();
+		if (trim($_POST['txtKodeObat'])=="") {
+			$pesanError[] = "Data <b>Kode Obat belum diisi</b>, ketik Kode dari Keyboard atau dari <b>Barcode Reader</b> !";		
+		}
+		if (trim($_POST['txtJumlah'])=="" or ! is_numeric(trim($_POST['txtJumlah']))) {
+			$pesanError[] = "Data <b>Jumlah Obat (Qty) belum diisi</b>, silahkan <b>isi dengan angka</b> !";		
+		}
+		
+		# Baca variabel
+		$txtNomorRM	= $_POST['txtNomorRM'];
+		$txtKodeObat	= $_POST['txtKodeObat'];
+		$txtKodeObat	= str_replace("'","&acute;", $txtKodeObat);
+		$txtJumlah	= $_POST['txtJumlah'];
+
+		# Skrip validasi Stok Obat
+		# Jika stok < (kurang) dari Jumlah yang dibeli, maka buat Pesan Error
+		$cekSql	= "SELECT stok FROM obat WHERE kd_obat='$txtKodeObat'";
+		$cekQry = mysql_query($cekSql, $koneksidb) or die ("Gagal Query".mysql_error());
+		$cekRow = mysql_fetch_array($cekQry);
+		if ($cekRow['stok'] < $txtJumlah) {
+			$pesanError[] = "Stok Obat untuk Kode <b>$txtKodeObat</b> adalah <b> $cekRow[stok]</b>, tidak dapat dijual!";
+		}
+				
+		# JIKA ADA PESAN ERROR DARI VALIDASI
+		if (count($pesanError)>=1 ){
+			echo "<div class='alert alert-danger'>";
+			echo "<img src='../images/attention.png'> <br><hr>";
+				$noPesan=0;
+				foreach ($pesanError as $indeks=>$pesan_tampil) { 
+				$noPesan++;
+					echo "&nbsp;&nbsp; $noPesan. $pesan_tampil<br>";	
+				} 
+			echo "</div> <br>"; 
+		}
+		else {
+			# SIMPAN KE DATABASE (tmp_penjualan)	
+			// Periksa, apakah Kode obat atau Kode Barcode yang diinput ada di dalam tabel obat
+	$mySql ="SELECT * FROM obat WHERE kd_obat='$txtKodeObat'";
+	$myQry = mysql_query($mySql, $koneksidb) or die ("Gagal Query".mysql_error());
+	$myRow = mysql_fetch_array($myQry);
+	if (mysql_num_rows($myQry) >= 1) {
+		// Membaca kode obat/ obat
+		$kodeObat	= $myRow['kd_obat'];
+		$harga	= $myRow['harga_jual'] * $txtJumlah;
+		
+		// Jika Kode ditemukan, masukkan data ke Keranjang (TMP)
+		$tmpSql 	= "INSERT INTO tmp_penjualan (kd_obat, jumlah, harga,  kd_petugas, kd_pasien) 
+					VALUES ('$kodeObat', '$txtJumlah', '$harga', '".$_SESSION['SES_LOGIN']."', '$txtNomorRM')";
+		mysql_query($tmpSql, $koneksidb) or die ("Gagal Query tmp : ".mysql_error());
+	}
+	}
+
+	}
 
 # ========================================================================================================
 # JIKA TOMBOL SIMPAN TRANSAKSI DIKLIK
@@ -80,19 +156,27 @@ if(isset($_POST['btnSimpan'])){
 		$pesanError[] = "Data <b> Uang Bayar (Rp)</b> belum diisi, silahkan isi dengan uang (Rp) !";		
 	}
 
+	if (trim($_POST['txtUangBayar']) < trim($_POST['txtTotBayar'])) {
+		$pesanError[] = "Data <b> Uang Bayar Tidak Cukup</b>.  
+						 Total transaksi adalah <b> Rp. ".format_angka($_POST['txtTotBayar'])."</b>";		
+	}
+
 	# Validasi jika belum ada satupun data item yang dimasukkan
-	$tmpSql ="SELECT COUNT(*) As qty FROM tmp_rawat WHERE kd_petugas='".$_SESSION['SES_LOGIN']."'";
+	$tmpSql ="SELECT COUNT(*) As qty FROM tmp_rawat WHERE kd_pasien='".$_POST['txtNomorRM']."'";
 	$tmpQry = mysql_query($tmpSql, $koneksidb) or die ("Gagal Query Tmp".mysql_error());
 	$tmpData = mysql_fetch_array($tmpQry);
 	if ($tmpData['qty'] < 1) {
-		$pesanError[] = "<b>DAFTAR TINDAKAN MASIH KOSONG</b>, Daftar item tindakan belum ada yang dimasukan, <b>minimal 1 data</b>.";
+		$pesanError[] = "<b>DAFTAR TINDAKAN MASIH KOSONG</b>, Daftar item tindakan belum ada yang dimasukan <b>minimal 1 data</b>.";
 	}
+
 
 	# Baca variabel
 	$txtTanggal 	= $_POST['txtTanggal'];
 	$txtNomorRM		= $_POST['txtNomorRM'];
 	$txtDiagnosa	= $_POST['txtDiagnosa'];
 	$txtUangBayar	= $_POST['txtUangBayar'];
+	$txtTotBayar	= $_POST['txtTotBayar'];
+	$txtPasien      = $_POST['txtPasien'];
 			
 			
 	# JIKA ADA PESAN ERROR DARI VALIDASI
@@ -109,8 +193,15 @@ if(isset($_POST['btnSimpan'])){
 	else {
 		# SIMPAN KE DATABASE
 		# Jika jumlah error pesanError tidak ada, maka proses Penyimpanan akan dikalkukan
-		
-		// Membuat kode Transaksi baru
+
+				# simpan trx Tmp jika datanya sudah dipindah
+		$SaveTrx = "INSERT INTO `transaksi` (`id`, `harga`, `bayar`, `timestamp`, `idpetugas`) VALUES (NULL, '$txtTotBayar', '$txtUangBayar', NULL, '".$_SESSION['SES_LOGIN']."')";
+		mysql_query($SaveTrx, $koneksidb) or die ("Gagal simpan trx".mysql_error());
+
+		$idtrx = mysql_insert_id();
+
+		$tmpRawat   = $_POST['tmpRawat'];
+
 		$nomorRawat = buatKode("rawat", "RP");
 		
 		$tanggal	= InggrisTgl($_POST['txtTanggal']);
@@ -122,12 +213,14 @@ if(isset($_POST['btnSimpan'])){
 						tgl_rawat='$tanggal', 
 						nomor_rm='$txtNomorRM', 
 						hasil_diagnosa='$txtDiagnosa', 
-						uang_bayar='$txtUangBayar', 
-						kd_petugas='$userLogin'";
+						uang_bayar='$tmpRawat', 
+						kd_petugas='$userLogin',
+						idtransaksi='$idtrx'";
 		mysql_query($mySql, $koneksidb) or die ("Gagal query".mysql_error());
 
-		# Ambil semua data tindakan/tindakan yang dipilih, berdasarkan user yg login
-		$tmpSql ="SELECT * FROM tmp_rawat WHERE kd_petugas='$userLogin'";
+
+		# Ambil semua data tindakan/tindakan yang dipilih, berdasarkan pasien
+		$tmpSql ="SELECT * FROM tmp_rawat WHERE kd_pasien='$txtNomorRM'";
 		$tmpQry = mysql_query($tmpSql, $koneksidb) or die ("Gagal Query Tmp".mysql_error());
 		while ($tmpData = mysql_fetch_array($tmpQry)) {
 			// Membaca data dari tabel TMP
@@ -146,9 +239,60 @@ if(isset($_POST['btnSimpan'])){
 							 bagi_hasil_dokter='$bagiHasilDokter'";
 			mysql_query($itemSql, $koneksidb) or die ("Gagal Query ".mysql_error());
 		}
+
+		$tmpSql ="SELECT COUNT(*) As qty FROM tmp_penjualan WHERE kd_pasien='".$_POST['txtNomorRM']."'";
+		$tmpQry = mysql_query($tmpSql, $koneksidb) or die ("Gagal Query Tmp".mysql_error());
+		$tmpData = mysql_fetch_array($tmpQry);
+		if ($tmpData['qty'] > 0) {
+			
+			$tmpPenjualan = $_POST['tmpPenjualan'];
+	
+			$noTransaksi = buatKode("penjualan", "JL");
+			$mySql	= "INSERT INTO penjualan SET 
+							no_penjualan='$noTransaksi', 
+							tgl_penjualan='".InggrisTgl($_POST['txtTanggal'])."', 
+							pelanggan='$txtPasien', 
+							keterangan='Perawatan Pasien', 
+							uang_bayar='$tmpPenjualan',
+							kd_petugas='".$_SESSION['SES_LOGIN']."',
+							idtransaksi=$idtrx";
+
+			mysql_query($mySql, $koneksidb) or die ("Gagal query".mysql_error());
+
+			# SIMPAN DATA TMP KE PENJUALAN_ITEM
+		# Ambil semua data obat yang dipilih, berdasarkan kasir yg login
+		$tmpSql ="SELECT obat.*, tmp.jumlah FROM obat, tmp_penjualan As tmp
+					WHERE obat.kd_obat = tmp.kd_obat AND tmp.kd_pasien='".$_POST['txtNomorRM']."'";
+		$tmpQry = mysql_query($tmpSql, $koneksidb) or die ("Gagal Query Tmp".mysql_error());
+		while ($tmpData = mysql_fetch_array($tmpQry)) {
+			// Baca data dari tabel obat dan jumlah yang dibeli dari TMP
+			$dataKode 	= $tmpData['kd_obat'];
+			$dataHargaM	= $tmpData['harga_modal'];
+			$dataHargaJ	= $tmpData['harga_jual'];
+			$dataJumlah	= $tmpData['jumlah'];
+			
+			// MEMINDAH DATA, Masukkan semua data di atas dari tabel TMP ke tabel ITEM
+			$itemSql = "INSERT INTO penjualan_item SET 
+									no_penjualan='$noTransaksi', 
+									kd_obat='$dataKode', 
+									harga_modal='$dataHargaM', 
+									harga_jual='$dataHargaJ', 
+									jumlah='$dataJumlah'";
+			mysql_query($itemSql, $koneksidb) or die ("Gagal Query ".mysql_error());
+			
+			// Skrip Update stok
+			$stokSql = "UPDATE obat SET stok = stok - $dataJumlah WHERE kd_obat='$dataKode'";
+			mysql_query($stokSql, $koneksidb) or die ("Gagal Query Edit Stok".mysql_error());
+		}
+		
+		# Kosongkan Tmp jika datanya sudah dipindah
+		$hapusSql = "DELETE FROM tmp_penjualan WHERE kd_pasien='".$_POST['txtNomorRM']."'";
+		mysql_query($hapusSql, $koneksidb) or die ("Gagal kosongkan tmp".mysql_error());
+
+		}
 			
 		# Kosongkan Tmp jika datanya sudah dipindah
-		$hapusSql = "DELETE FROM tmp_rawat WHERE kd_petugas='$userLogin'";
+		$hapusSql = "DELETE FROM tmp_rawat WHERE kd_pasien='".$_POST['txtNomorRM']."'";
 		mysql_query($hapusSql, $koneksidb) or die ("Gagal kosongkan tmp".mysql_error());
 		
 		// Jalankan skrip Nota
@@ -162,8 +306,22 @@ if(isset($_POST['btnSimpan'])){
 	}	
 }
 
+//amnbil total bayar
+if(isset($_GET['NomorRM'])){
+	$tmpSql ="SELECT sum(harga) as harga FROM tmp_penjualan WHERE kd_pasien='".$_GET['NomorRM']."'";
+	$tmpQry = mysql_query($tmpSql, $koneksidb) or die ("Gagal Query Tmp".mysql_error());
+	$tmpPenjualan = mysql_fetch_array($tmpQry);
+
+	$tmpSql ="SELECT sum(harga) as harga FROM tmp_rawat WHERE kd_pasien='".$_GET['NomorRM']."'";
+	$tmpQry = mysql_query($tmpSql, $koneksidb) or die ("Gagal Query Tmp".mysql_error());
+	$tmpRawat = mysql_fetch_array($tmpQry);
+
+	$txtTotBayar = $tmpRawat['harga'] + $tmpPenjualan['harga'];
+}
+
 // Membaca Nomor RM data Pasien
 $NomorRM= isset($_GET['NomorRM']) ?  $_GET['NomorRM'] : '';
+$kode   = isset($_GET['kode']) ?  $_GET['kode'] : '';
 $mySql	= "SELECT nomor_rm, nm_pasien FROM pasien WHERE nomor_rm='$NomorRM'";
 $myQry	= mysql_query($mySql, $koneksidb)  or die ("Query salah : ".mysql_error());
 $myData = mysql_fetch_array($myQry);
@@ -190,12 +348,6 @@ $dataTindakan	= isset($_POST['cmbTindakan']) ? $_POST['cmbTindakan'] : '';
 	</div>
   </div>
     <div class="form-group">
-    <label class="col-sm-2 control-label">Tgl Rawat</label>
-    <div class="col-sm-10">
-     <input name="txtTanggal" type="text" class="tcal" value="<?php echo $dataTanggal; ?>" size="23" />
-	</div>
-  </div>
-    <div class="form-group">
     <label class="col-sm-2 control-label">Nomor RM</label>
     
     <div class="col-sm-8">
@@ -210,6 +362,13 @@ $dataTindakan	= isset($_POST['cmbTindakan']) ? $_POST['cmbTindakan'] : '';
     <label class="col-sm-2 control-label">Nama Pasien</label>
     <div class="col-sm-10">
      <input name="txtPasien" value="<?php echo $dataPasien; ?>" size="80" maxlength="100" readonly="readonly" class="form-control"/>
+	</div>
+  </div>
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Tgl Rawat</label>
+    <div class="col-sm-10">
+     <input name="txtTanggal" type="text" class="tcal" value="<?php echo $dataTanggal; ?>" size="23" />
 	</div>
   </div>
 
@@ -267,37 +426,81 @@ $dataTindakan	= isset($_POST['cmbTindakan']) ? $_POST['cmbTindakan'] : '';
 
   <div class="form-group">
     <label class="col-sm-2 control-label">Harga Tindakan (Rp)</label>
-    <div class="col-sm-8">
+    <div class="col-sm-6">
     <input name="txtHarga" size="18" maxlength="12" class="form-control"/>
         
 	</div>
-	<div class="col-sm-2"><input name="btnTambah" type="submit" style="cursor:pointer;" value=" Tambah " class="btn btn-success" /></div>
+	<div class="col-sm-4">
+		<input name="btnTambahTindakan" type="submit" style="cursor:pointer;" value=" Tambah " class="btn btn-default" />
+	</div>
   </div>
 </div>
 
+ 	<div class="alert alert-success">
+  		<h4>Tambah Obat</h4>
+
+  		 <div class="form-group">
+    <label class="col-sm-2 control-label">Kode Obat</label>
+    
+    <div class="col-sm-8">
+   <input name="txtKodeObat" value="<?php echo $kode; ?>" size="23" maxlength="10" class="form-control" readonly="readonly"/>
+   <?
+   if ($NomorRM=='') {
+   	 echo "pilih pasien terlebih dahulu";
+   }else{
+   	echo " * pilih dari daftar obat, lalu klik menu <strong>daftar</strong>";
+   }
+   ?>
+  	</div>
+  	<div class="col-sm-2">
+	  	<?
+	   if ($NomorRM!='') {
+	   ?>
+    	<a href="?page=Pencarian-Obat&NomorRM=<? echo $NomorRM; ?>" target="_self" class="btn btn-success"><i class="fa fa-search"></i></a>
+    	<?}?>
+    </div>
+  </div>
+
+  		<div class="form-group">
+	    <label class="col-sm-2 control-label">Jumlah</label>
+	    <div class="col-sm-6">
+	    	 <input class="angkaC form-control" name="txtJumlah"
+				 onblur="if (value == '') {value = '1'}" 
+				 onfocus="if (value == '1') {value =''}" />
+		</div>
+		<div class="col-sm-4">
+				<?
+			   if ($NomorRM!='') {
+			   ?>
+		    	<input name="btnTambahObat" type="submit" style="cursor:pointer;" value=" Tambah " class="btn btn-default" />
+		    	<?}?>
+		</div>
+  		</div>
+  	</div>
+
   <table class="table table-striped">
     <tr>
-      <th colspan="6"><strong>DAFTAR TINDAKAN </strong></th>
+      <th colspan="6"><strong>DAFTAR TINDAKAN</strong></th>
     </tr>
     <tr>
-      <td width="27" ><strong>No</strong></td>
-      <td width="58" ><strong>Kode </strong></td>
-      <td width="300"><strong>Nama Tindakan </strong></td>
-      <td width="190"><strong>Dokter</strong></td>
-      <td width="150"><strong>Harga (Rp) </strong></td>
-      <td width="39"><strong>Tools</strong></td>
+      <th ><strong>No</strong></td>
+      <th><strong>Kode </strong></td>
+      <th><strong>Nama Tindakan </strong></td>
+      <th><strong>Dokter</strong></td>
+      <th><strong>Harga (Rp) </strong></td>
+      <th><strong>Tools</strong></td>
     </tr>
     <?php
 	// Query SQL menampilkan data Tindakan dalam TMP_RAWAT
 	$tmpSql ="SELECT tmp_rawat.*, tindakan.nm_tindakan, dokter.nm_dokter FROM tmp_rawat
 			  LEFT JOIN tindakan ON tmp_rawat.kd_tindakan=tindakan.kd_tindakan 
 			  LEFT JOIN dokter ON tmp_rawat.kd_dokter=dokter.kd_dokter
-			  WHERE tmp_rawat.kd_petugas='".$_SESSION['SES_LOGIN']."' ORDER BY id";
+			  WHERE tmp_rawat.kd_petugas='".$_SESSION['SES_LOGIN']."' and tmp_rawat.kd_pasien='$NomorRM' ORDER BY id";
 	$tmpQry = mysql_query($tmpSql, $koneksidb) or die ("Gagal Query Tmp".mysql_error());
-	$nomor=0;  $totalHarga = 0; 
+	$nomor=0;  $totalHargaTindakan = 0; 
 	while($tmpData = mysql_fetch_array($tmpQry)) {
 		$nomor++;
-		$totalHarga	= $totalHarga +  $tmpData['harga'];
+		$totalHargaTindakan	+=  $tmpData['harga'];
 	?>
 	  <tr>
 		<td><?php echo $nomor; ?></td>
@@ -305,19 +508,72 @@ $dataTindakan	= isset($_POST['cmbTindakan']) ? $_POST['cmbTindakan'] : '';
 		<td><?php echo $tmpData['nm_tindakan']; ?></td>
 		<td><?php echo $tmpData['nm_dokter']; ?></td>
 		<td align="right"><?php echo format_angka($tmpData['harga']); ?></td>
-		<td><a href="?Aksi=Hapus&id=<?php echo $tmpData['id']; ?>" target="_self" class="btn btn-danger"><i class="fa fa-trash"></i></a></td>
+		<td><a href="?NomorRM=<?php echo $NomorRM?>&at=del&id=<?php echo $tmpData['id']; ?>" target="_self" class="btn btn-danger"><i class="fa fa-trash"></i></a></td>
 	  </tr>
     <?php } ?>
     <tr>
-      <td colspan="4" align="right"><b> GRAND TOTAL  : </b></td>
-      <td align="right"><strong>Rp. <?php echo format_angka($totalHarga); ?></strong></td>
+      <td colspan="4" align="right"><b>TOTAL  : </b></td>
+      <td align="right"><strong>Rp. <?php echo format_angka($totalHargaTindakan); ?></strong></td>
       <td>&nbsp;</td>
     </tr>
   </table>
 
-      <div class="form-group">
-    <label class="col-sm-2 control-label">Uang Bayar/ DP (Rp.)</label>
-    <div class="col-sm-10">
+    <table class="table table-striped" width="800" border="0" cellspacing="1" cellpadding="2">
+    <tr>
+      <th colspan="7">DAFTAR OBAT </th>
+    </tr>
+    <tr>
+      <th><strong>No</strong></td>
+      <th><strong>Kode</strong></td>
+      <th><strong>Nama Obat </strong></td>
+      <th align="right"><strong>Harga (Rp) </strong></td>
+      <th align="right"><strong>Jumlah</strong></td>
+      <th align="right"><strong>Sub Total(Rp) </strong></td>
+      <th align="center">Tools</td>
+    </tr>
+    <?php
+	// Qury menampilkan data dalam Grid TMP_Penjualan 
+	$tmpSql ="SELECT obat.*, tmp.id, tmp.jumlah FROM obat, tmp_penjualan As tmp
+			WHERE obat.kd_obat=tmp.kd_obat AND tmp.kd_petugas='".$_SESSION['SES_LOGIN']."'
+			AND tmp.kd_pasien='$NomorRM' ORDER BY obat.kd_obat ";
+	$tmpQry = mysql_query($tmpSql, $koneksidb) or die ("Gagal Query Tmp".mysql_error());
+	$nomor=0;  $hargaDiskon = 0;
+	while($tmpData = mysql_fetch_array($tmpQry)) {
+		$nomor++;
+		$subSotal 	+= $tmpData['jumlah'] * $tmpData['harga_jual'];
+		$jumlahobat	+= $tmpData['jumlah'];
+	?>
+    <tr>
+      <td><?php echo $nomor; ?></td>
+      <td><?php echo $tmpData['kd_obat']; ?></b></td>
+      <td><?php echo $tmpData['nm_obat']; ?></td>
+      <td align="right"><?php echo format_angka($tmpData['harga_jual']); ?></td>
+      <td align="right"><?php echo $tmpData['jumlah']; ?></td>
+      <td align="right"><?php echo format_angka($subSotal); ?></td>
+      <td><a href="?NomorRM=<?php echo $NomorRM?>&ao=del&id=<?php echo $tmpData['id']; ?>" target="_self" class="btn btn-danger"><i class="fa fa-trash"></i></a></td>
+    </tr>
+<?php } ?>
+    <tr>
+      <td colspan="4" align="right" bgcolor="#F5F5F5"><strong>TOTAL   (Rp.) : </strong></td>
+      <td align="right" bgcolor="#F5F5F5"><strong><?php echo $jumlahobat; ?></strong></td>
+      <td align="right" bgcolor="#F5F5F5"><strong><?php echo format_angka($totalBayar); ?></strong></td>
+      <td bgcolor="#F5F5F5">&nbsp;</td>
+    </tr>
+  </table>
+
+ <div class="form-group">
+    <label class="col-sm-5 control-label">Grand Total (Rp.)</label>
+    <div class="col-sm-7">
+     <input name="txtTotBayar" value="<?php echo $txtTotBayar; ?>" size="23" maxlength="23" class="form-control" readonly="readonly"/>
+     <input name="tmpRawat" type="hidden" value="<?php echo $tmpRawat['harga']; ?>" />
+
+     <input name="tmpPenjualan" type="hidden" value="<?php echo $tmpPenjualan['harga']; ?>"/>
+	</div>
+  </div>
+
+  <div class="form-group">
+    <label class="col-sm-5 control-label">Uang Bayar/ DP (Rp.)</label>
+    <div class="col-sm-7">
      <input name="txtUangBayar" value="<?php echo $dataUangBayar; ?>" size="23" maxlength="23" class="form-control"/>
 	</div>
   </div>

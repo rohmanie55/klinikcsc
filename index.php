@@ -2,9 +2,9 @@
 include_once "admin/library/inc.connection.php";
 
 ?>
-
   <!--banner-->
   <section id="banner" class="banner">
+
     <div class="bg-color">
       <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
@@ -30,12 +30,16 @@ include_once "admin/library/inc.connection.php";
         </div>
       </nav>
       <div class="container">
-        <?php 
+        
+            <?php 
       if(isset($_GET['p'])){
-      echo "<div class='alert alert-primary'>".$_GET['p']."</div>";
+        ?>
+        <div class="alert alert-danger">
+          <p><? echo $_GET['p']; ?></p>
+        </div>
+      <?
       }
       ?>
-
         <div class="row">
           <div class="banner-info">
             <div class="banner-logo text-center">

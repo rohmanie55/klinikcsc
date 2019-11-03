@@ -3,8 +3,16 @@ include_once "../library/inc.connection.php";
 include_once "../library/inc.library.php";
 
 # Baca noNota dari URL
-if(isset($_GET['nomorRawat'])){
+if(isset($_GET['nomorRawat'])&&isset($_GET['trx'])){
 	$nomorRawat = $_GET['nomorRawat'];
+  $trx = $_GET['trx'];
+
+
+   // Perintah untuk mendapatkan data dari tabel penjualan
+  $mySql = "SELECT * FROM transaksi WHERE id='$trx'";
+
+  $myQry = mysql_query($mySql, $koneksidb)  or die ("Query salah : ".mysql_error());
+  $kolomTrx = mysql_fetch_array($myQry);
 	
 	// Perintah untuk mendapatkan data dari tabel rawat
 	$mySql = "SELECT rawat.*, petugas.nm_petugas FROM rawat
@@ -12,6 +20,13 @@ if(isset($_GET['nomorRawat'])){
 				WHERE no_rawat='$nomorRawat'";
 	$myQry = mysql_query($mySql, $koneksidb)  or die ("Query salah : ".mysql_error());
 	$kolomData = mysql_fetch_array($myQry);
+
+  // Perintah untuk mendapatkan data dari tabel penjualan
+  $mySql = "SELECT * FROM penjualan WHERE idtransaksi=$trx";
+
+  $myQry = mysql_query($mySql, $koneksidb)  or die ("Query salah : ".mysql_error());
+  $kolomPenjualan = mysql_fetch_array($myQry);
+  // die(var_dump($kolomPenjualan['no_penjualan']));
 }
 else {
 	echo "Nomor Rawat (nomorRawat) tidak ditemukan";
@@ -36,8 +51,8 @@ else {
         <strong>NPWP/ PKP : </strong><br /> </td>
   </tr>
   <tr>
-    <td colspan="2"><strong>No. Nota :</strong> <?php echo $kolomData['no_rawat']; ?></td>
-    <td colspan="2" align="right"> <?php echo IndonesiaTgl($kolomData['tgl_rawat']); ?></td>
+    <td colspan="2"><strong>No. Transaksi :</strong> <?php echo "TRX/".$kolomTrx['id']; ?></td>
+    <td colspan="2" align="right"> <?php echo ($kolomTrx['timestamp']); ?></td>
   </tr>
   <tr>
     <td width="23" bgcolor="#F5F5F5"><strong>No</strong></td>
@@ -48,7 +63,6 @@ else {
 <?php
 # Baca variabel
 $totalBayar = 0; 
-$uangKembali=0;
 
 # Menampilkan List Item tindakan yang dibeli untuk Nomor Transaksi Terpilih
 $notaSql = "SELECT rawat_tindakan.*, tindakan.nm_tindakan, dokter.nm_dokter 
@@ -61,8 +75,8 @@ $notaQry = mysql_query($notaSql, $koneksidb)  or die ("Query list salah : ".mysq
 $nomor  = 0;  
 while ($notaData = mysql_fetch_array($notaQry)) {
 $nomor++;
-	$totalBayar	= $totalBayar + $notaData['harga'];
-	$uangKembali= $kolomData['uang_bayar'] - $totalBayar;
+	$totalTindakan	= $notaData['harga'];
+
 ?>
   <tr>
     <td><?php echo $nomor; ?></td>
@@ -76,8 +90,40 @@ $nomor++;
     <td align="right" bgcolor="#F5F5F5"><?php echo format_angka($totalBayar); ?></td>
   </tr>
   <tr>
+    <td width="23" bgcolor="#F5F5F5"><strong>No</strong></td>
+    <td width="307" bgcolor="#F5F5F5"><strong>Daftar Obat </strong></td>
+    <td width="174" bgcolor="#F5F5F5"><strong>Jumlah</strong></td>
+    <td width="80" align="right" bgcolor="#F5F5F5"><strong>Harga@</strong></td>
+  </tr>
+  <? 
+  if (count($kolomPenjualan)>0) {
+   $tmpSql = "SELECT penjualan_item.*, obat.nm_obat FROM penjualan_item
+      LEFT JOIN obat ON penjualan_item.kd_obat=obat.kd_obat 
+      WHERE penjualan_item.no_penjualan='".$kolomPenjualan['no_penjualan']."'
+      ORDER BY obat.kd_obat ASC";
+      $tmpQry = mysql_query($tmpSql, $koneksidb) or die ("Gagal Query Tmp".mysql_error());
+      $nomor=0;  $hargaDiskon = 0;   $totalBayar  = 0;  $jumlahobat = 0;
+      while($tmpData = mysql_fetch_array($tmpQry)) {
+
+      $subSotal   = $tmpData['jumlah'] * $tmpData['harga_jual'];
+      $Total += $subSotal;
+
+    ?>
+   <tr>
+    <td><?php echo $nomor; ?></td>
+    <td><?php echo $tmpData['id']; ?>/ <?php echo $tmpData['nm_obat']; ?></td>
+    <td><?php echo $tmpData['jumlah']; ?></td>
+    <td align="right"><?php echo format_angka($subSotal); ?></td>
+  </tr>
+<?php }
+} ?>
+   <tr>
+    <td colspan="3" align="right"><strong>Total Biaya Obat (Rp) : </strong></td>
+    <td align="right" bgcolor="#F5F5F5"><?php echo format_angka($Total); ?></td>
+  </tr>
+  <tr>
     <td colspan="3" align="right"><strong> Uang Bayar (Rp) : </strong></td>
-    <td align="right"><?php echo format_angka($kolomData['uang_bayar']); ?></td>
+    <td align="right"><?php echo format_angka($kolomTrx['bayar']); ?></td>
   </tr>
   <tr>
     <td colspan="3" align="right">
@@ -90,7 +136,7 @@ $nomor++;
 	else {
 		echo "Uang Kembali (Rp) : ";
 	}; ?></strong></td>
-    <td align="right"><?php echo format_angka($uangKembali); ?></td>
+    <td align="right"><?php echo format_angka($kolomTrx['bayar']-$kolomTrx['harga']); ?></td>
   </tr>
   <tr>
     <td colspan="4"><strong>Petugas :</strong> <?php echo $kolomData['nm_petugas']; ?></td>

@@ -112,6 +112,10 @@ if(isset($_POST['btnSimpan'])){
 		echo "</div> <br>"; 
 	}
 	else {
+		//get inserted id
+
+		$SaveTrx = "INSERT INTO `transaksi` (`id`, `harga`, `bayar`, `timestamp`, `idpetugas`) VALUES (NULL, '$txtTotBayar', '$txtUangBayar', NULL, '".$_SESSION['SES_LOGIN']."')";
+mysql_query($SaveTrx, $koneksidb) or die ("Gagal simpan trx".mysql_error());
 		# SIMPAN DATA KE DATABASE
 		# Jika jumlah error pesanError tidak ada, maka penyimpanan dilakukan. Data dari tmp dipindah ke tabel penjualan dan penjualan_item
 		$noTransaksi = buatKode("penjualan", "JL");

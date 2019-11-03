@@ -37,7 +37,7 @@ $max	 = ceil($jml/$row);
         <td><?php echo $myData['nomor_rm']; ?></td>
         <td><?php echo $myData['nm_pasien']; ?></td>
         <td><?php echo $myData['hasil_diagnosa']; ?></td>
-        <td width="45" align="center"><a href="rawat_nota.php?nomorRawat=<?php echo $Kode; ?>" target="_blank" class="btn btn-success"><i class="fa fa-credit-card"></i></a></td>
+        <td width="45" align="center"><a href="rawat_nota.php?trx=<?php echo $myData['idtransaksi']; ?>&nomorRawat=<?php echo $Kode; ?>" target="_blank" class="btn btn-success"><i class="fa fa-credit-card"></i></a></td>
         <td width="45" align="center"><a href="?page=Rawat-Hapus&Kode=<?php echo $Kode; ?>" target="_self" alt="Delete Data" onclick="return confirm('ANDA YAKIN AKAN MENGHAPUS DATA RAWAT INI ... ?')" class="btn btn-danger"><i class="fa fa-trash"></i></a></td>
       </tr>
       <?php } ?>

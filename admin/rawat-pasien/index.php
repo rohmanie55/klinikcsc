@@ -80,6 +80,9 @@ if(isset($_GET['page'])) {
 		case 'Pencarian-Pasien' : 
 			if(!file_exists ("pencarian_pasien.php")) die ("Empty Main Page!"); 
 			include "pencarian_pasien.php";	break;
+		case 'Pencarian-Obat' : 
+		if(!file_exists ("pencarian_obat.php")) die ("Empty Main Page!"); 
+		include "pencarian_obat.php";	break;
 	}
 }
 else {
