@@ -3,8 +3,15 @@ include_once "../library/inc.connection.php";
 include_once "../library/inc.library.php";
 
 # Baca noNota dari URL
-if(isset($_GET['noNota'])){
+if(isset($_GET['noNota'])&&isset($_GET['trx'])){
 	$noNota = $_GET['noNota'];
+  $trx = $_GET['trx'];
+
+    // Perintah untuk mendapatkan data dari tabel penjualan
+  $mySql = "SELECT * FROM transaksi WHERE id='$trx'";
+
+  $myQry = mysql_query($mySql, $koneksidb)  or die ("Query salah : ".mysql_error());
+  $kolomTrx = mysql_fetch_array($myQry);
 	
 	// Perintah untuk mendapatkan data dari tabel penjualan
 	$mySql = "SELECT penjualan.*, petugas.nm_petugas FROM penjualan
@@ -32,13 +39,12 @@ else {
 <table class="table-list" width="430" border="0" cellspacing="0" cellpadding="2">
   <tr>
     <td height="87" colspan="5" align="center">
-		<strong>APOTEK & KLINIK FITRIA</strong><br />
-        <strong>NPWP/ PKP : </strong>1.111111.11111<br />
+		<strong>APOTEK & KLINIK CSC</strong><br />
          </td>
   </tr>
   <tr>
     <td colspan="2"><strong>No Nota :</strong> <?php echo $kolomData['no_penjualan']; ?></td>
-    <td colspan="3" align="right"> <?php echo IndonesiaTgl($kolomData['tgl_penjualan']); ?></td>
+    <td colspan="3" align="right"> <?php echo IndonesiaTgl($kolomTrx['timestamp']); ?></td>
   </tr>
   <tr>
     <td width="32" bgcolor="#F5F5F5"><strong>No</strong></td>
@@ -65,7 +71,6 @@ $nomor++;
 	$subSotal 	= $notaData['jumlah'] * $notaData['harga_jual'];
 	$totalBayar	= $totalBayar + $subSotal;
 	$jumlahObat = $jumlahObat + $notaData['jumlah'];
-	$uangKembali= $kolomData['uang_bayar'] - $totalBayar;
 ?>
   <tr>
     <td><?php echo $nomor; ?></td>
@@ -81,11 +86,11 @@ $nomor++;
   </tr>
   <tr>
     <td colspan="3" align="right"><strong> Uang Bayar (Rp) : </strong></td>
-    <td colspan="2" align="right"><?php echo format_angka($kolomData['uang_bayar']); ?></td>
+    <td colspan="2" align="right"><?php echo format_angka($kolomTrx['bayar']); ?></td>
   </tr>
   <tr>
     <td colspan="3" align="right"><strong>Uang Kembali (Rp) : </strong></td>
-    <td colspan="2" align="right"><?php echo format_angka($uangKembali); ?></td>
+    <td colspan="2" align="right"><?php echo format_angka($kolomTrx['bayar']-$kolomTrx['harga']); ?></td>
   </tr>
   <tr>
     <td colspan="5"><strong>Petugas :</strong> <?php echo $kolomData['nm_petugas']; ?></td>

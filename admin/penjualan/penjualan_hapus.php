@@ -4,6 +4,26 @@ include_once "../library/inc.seslogin.php";
 // Periksa ada atau tidak variabel Kode pada URL (alamat browser)
 if(isset($_GET['Kode'])){
 	$Kode	= $_GET['Kode'];
+
+	$mySql = "SELECT * FROM penjualan WHERE no_penjualan='$Kode'";
+	$myQry = mysql_query($mySql, $koneksidb) or die ("Eror hapus data".mysql_error());
+	$myData = mysql_fetch_array($myQry);
+
+	$mySql = "SELECT * FROM transaksi WHERE id= ".$myData['idtransaksi'];
+	$myQry = mysql_query($mySql, $koneksidb) or die ("Eror hapus data".mysql_error());
+	$myTrx = mysql_fetch_array($myQry);
+
+	
+
+	if ($myTrx['harga']>$myData['uang_bayar']) {
+		// Skrip Update stok
+		$bayar = $myData['uang_bayar'];
+		$trxSql = "UPDATE transaksi SET harga = harga - $bayar WHERE id= ".$myTrx['id'];
+		mysql_query($trxSql, $koneksidb) or die ("Gagal Query Edit Stok".mysql_error());
+	}else{
+		$trxSql = "DELETE FROM transaksi WHERE id= ".$myTrx['id'];
+		$test = mysql_query($trxSql, $koneksidb) or die ("Gagal Query Edit Stok".mysql_error());
+	}
 	
 	// Hapus data sesuai Kode yang didapat di URL
 	$mySql = "DELETE FROM penjualan WHERE no_penjualan='$Kode'";

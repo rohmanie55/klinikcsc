@@ -41,7 +41,7 @@ if(isset($_POST['btnTambah'])){
 			
 	# JIKA ADA PESAN ERROR DARI VALIDASI
 	if (count($pesanError)>=1 ){
-		echo "<div class='mssgBox'>";
+		echo "<div class='alert alert-danger'>";
 		echo "<img src='../images/attention.png'> <br><hr>";
 			$noPesan=0;
 			foreach ($pesanError as $indeks=>$pesan_tampil) { 
@@ -59,10 +59,11 @@ $myRow = mysql_fetch_array($myQry);
 if (mysql_num_rows($myQry) >= 1) {
 	// Membaca kode obat/ obat
 	$kodeObat	= $myRow['kd_obat'];
+	$harga	= $myRow['harga_jual'] * $txtJumlah;
 	
 	// Jika Kode ditemukan, masukkan data ke Keranjang (TMP)
-	$tmpSql 	= "INSERT INTO tmp_penjualan (kd_obat, jumlah,  kd_petugas) 
-				VALUES ('$kodeObat', '$txtJumlah',  '".$_SESSION['SES_LOGIN']."')";
+	$tmpSql 	= "INSERT INTO tmp_penjualan (kd_obat, jumlah, harga,  kd_petugas) 
+				VALUES ('$kodeObat', '$txtJumlah', $harga, '".$_SESSION['SES_LOGIN']."')";
 	mysql_query($tmpSql, $koneksidb) or die ("Gagal Query tmp : ".mysql_error());
 }
 }
@@ -80,6 +81,11 @@ if(isset($_POST['btnSimpan'])){
 	if (trim($_POST['txtUangBayar'])==""  or ! is_numeric(trim($_POST['txtUangBayar']))) {
 		$pesanError[] = "Data <b> Uang Bayar</b> belum diisi, isi dengan uang (Rp) !";		
 	}
+
+	if (trim($_POST['txtTotBayar'])==""  or ! is_numeric(trim($_POST['txtTotBayar']))) {
+		$pesanError[] = "Data <b> Obat belum </b> belum pilih!";		
+	}
+
 	if (trim($_POST['txtUangBayar']) < trim($_POST['txtTotBayar'])) {
 		$pesanError[] = "Data <b> Uang Bayar Belum Cukup</b>.  
 						 Total belanja adalah <b> Rp. ".format_angka($_POST['txtTotBayar'])."</b>";		
@@ -98,11 +104,14 @@ if(isset($_POST['btnSimpan'])){
 	$txtPelanggan	= $_POST['txtPelanggan'];
 	$txtKeterangan	= $_POST['txtKeterangan'];
 	$txtUangBayar	= $_POST['txtUangBayar'];
+	$txtTotBayar    = $_POST['txtTotBayar'];
+
+
 			
 			
 	# JIKA ADA PESAN ERROR DARI VALIDASI
 	if (count($pesanError)>=1 ){
-		echo "<div class='mssgBox'>";
+		echo "<div class='alert alert-danger'>";
 		echo "<img src='../images/attention.png'> <br><hr>";
 			$noPesan=0;
 			foreach ($pesanError as $indeks=>$pesan_tampil) { 
@@ -115,7 +124,9 @@ if(isset($_POST['btnSimpan'])){
 		//get inserted id
 
 		$SaveTrx = "INSERT INTO `transaksi` (`id`, `harga`, `bayar`, `timestamp`, `idpetugas`) VALUES (NULL, '$txtTotBayar', '$txtUangBayar', NULL, '".$_SESSION['SES_LOGIN']."')";
-mysql_query($SaveTrx, $koneksidb) or die ("Gagal simpan trx".mysql_error());
+		mysql_query($SaveTrx, $koneksidb) or die ("Gagal simpan trx".mysql_error());
+
+		$idtrx = mysql_insert_id();
 		# SIMPAN DATA KE DATABASE
 		# Jika jumlah error pesanError tidak ada, maka penyimpanan dilakukan. Data dari tmp dipindah ke tabel penjualan dan penjualan_item
 		$noTransaksi = buatKode("penjualan", "JL");
@@ -124,8 +135,9 @@ mysql_query($SaveTrx, $koneksidb) or die ("Gagal simpan trx".mysql_error());
 						tgl_penjualan='".InggrisTgl($_POST['txtTanggal'])."', 
 						pelanggan='$txtPelanggan', 
 						keterangan='$txtKeterangan', 
-						uang_bayar='$txtUangBayar',
-						kd_petugas='".$_SESSION['SES_LOGIN']."'";
+						uang_bayar='$txtTotBayar',
+						kd_petugas='".$_SESSION['SES_LOGIN']."',
+						idtransaksi= $idtrx";
 		mysql_query($mySql, $koneksidb) or die ("Gagal query".mysql_error());
 		
 		# SIMPAN DATA TMP KE PENJUALAN_ITEM
@@ -168,6 +180,7 @@ mysql_query($SaveTrx, $koneksidb) or die ("Gagal simpan trx".mysql_error());
 
 	}	
 }
+
 
 # TAMPILKAN DATA KE FORM
 $noTransaksi 	= buatKode("penjualan", "JL");
@@ -240,7 +253,7 @@ while($tmpData = mysql_fetch_array($tmpQry)) {
       <td align="right"><?php echo format_angka($tmpData['harga_jual']); ?></td>
       <td align="right"><?php echo $tmpData['jumlah']; ?></td>
       <td align="right"><?php echo format_angka($subSotal); ?></td>
-      <td><a href="?Aksi=Delete&id=<?php echo $tmpData['id']; ?>" target="_self">Delete</a></td>
+      <td><a href="?Aksi=Delete&id=<?php echo $tmpData['id']; ?>" target="_self" class="btn btn-danger"><i class="fa fa-trash"></i></a></td>
     </tr>
 <?php } ?>
     <tr>
@@ -279,6 +292,14 @@ while($tmpData = mysql_fetch_array($tmpQry)) {
   	<div class="form-group">
 	    <label class="col-sm-2 control-label">UANG BAYAR (Rp.)</label>
 	    <div class="col-sm-10">
+    	<?
+
+    	$tmpSql ="SELECT sum(harga) as harga FROM tmp_penjualan WHERE kd_petugas='".$_SESSION['SES_LOGIN']."'";
+		$tmpQry = mysql_query($tmpSql, $koneksidb) or die ("Gagal Query Tmp".mysql_error());
+
+		$txtTotBayar = $tmpPenjualan['harga'];
+
+    	?>
 	     <input name="txtTotBayar" type="hidden" value="<?php echo $totalBayar; ?>" />
 	     <input name="txtUangBayar" value="<?php echo $dataUangBayar; ?>" class="form-control"/>
 		</div>
