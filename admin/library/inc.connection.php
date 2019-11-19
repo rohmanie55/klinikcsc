@@ -2,7 +2,7 @@
 # Konek ke Web Server Lokal
 $myHost	= "localhost";
 $myUser	= "root";
-$myPass	= "kebersamaan";
+$myPass	= "root";
 $myDbs	= "klinikcsc"; // nama database, disesuaikan dengan database di MySQL
 
 # Konek ke Web Server Lokal
